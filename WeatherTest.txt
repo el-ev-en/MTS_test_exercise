@@ -1,0 +1,45 @@
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.internal.Locatable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class WeatherTest {
+    static WebDriver driver;
+
+   @Test
+    public void open() {
+        driver = new ChromeDriver();
+        driver.get("http://www.e1.ru");
+        WebElement weatherButton = driver.findElement(By.cssSelector("[class = 'e1-nav__name e1-nav__name_weather']"));
+        weatherButton.click();
+    }
+
+    @Test
+    public void getData(){
+        open();
+        ArrayList<String> data = new ArrayList<>();
+        ((Locatable) driver).getCoordinates().inViewPort();
+        WebElement section = driver.findElement(By.cssSelector("[class = 'content-section content-section-shortrange_forecast']"));
+        WebElement subtables = section.findElement(By.cssSelector("[class = 'content-section__item content-section__item-tabs']"));
+        List<WebElement> blocks = subtables.findElements(By.cssSelector("[class = 'pgd-short-card pgd-short-card_holiday']"));
+        for (WebElement block:blocks
+             ) {
+            String date = getWeekdayAndDate(block);
+            System.out.println(date);
+            data.add(date);
+        }
+
+    }
+
+    public String getWeekdayAndDate(WebElement locator) {
+        WebElement dateField = locator.findElement(By.className("pgd-short-card__date"));
+        String date = dateField.getAttribute("textContent");
+        return date;
+    }
+
+}
